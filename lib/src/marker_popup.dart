@@ -14,11 +14,13 @@ class MarkerPopup extends StatefulWidget {
   final PopupBuilder popupBuilder;
   final PopupSnap snap;
   final MapState mapState;
+  final double popupHeight;
 
   MarkerPopup({
     @required this.mapState,
     @required this.popupController,
     @required this.snap,
+    this.popupHeight,
     @required this.popupBuilder,
     Key key,
   }) : super(key: key);
@@ -29,6 +31,7 @@ class MarkerPopup extends StatefulWidget {
       mapState,
       popupController,
       snap,
+      popupHeight,
       popupBuilder,
     );
   }
@@ -39,6 +42,7 @@ class _MarkerPopupState extends State<MarkerPopup> {
   final PopupController _popupController;
   final PopupBuilder _popupBuilder;
   final PopupSnap _snap;
+  final double _popupHeight;
 
   UniqueKey _popupKey; // Changing forces child rebuild.
   Marker _selectedMarker;
@@ -47,6 +51,7 @@ class _MarkerPopupState extends State<MarkerPopup> {
     this._mapState,
     this._popupController,
     this._snap,
+    this._popupHeight,
     this._popupBuilder,
   );
 
@@ -68,6 +73,7 @@ class _MarkerPopupState extends State<MarkerPopup> {
       _mapState,
       _selectedMarker,
       _snap,
+      _popupHeight,
     );
 
     return Positioned(

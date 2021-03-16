@@ -8,6 +8,7 @@ class PopupPosition {
     MapState mapState,
     Marker marker,
     PopupSnap snap,
+    double popupHeight,
   ) {
     final markerPosition = _markerPosition(mapState, marker);
 
@@ -16,6 +17,7 @@ class PopupPosition {
       markerPosition,
       CustomPoint(marker.width, marker.height),
       snap,
+      popupHeight,
     );
   }
 
@@ -24,6 +26,7 @@ class PopupPosition {
     CustomPoint markerPosition,
     CustomPoint markerSize,
     PopupSnap snap,
+    double popupHeight,
   ) {
     // Note: We always add the popup even if it might not be visible. This
     //       ensures the popup state is maintained even when it is not visible.
@@ -35,7 +38,8 @@ class PopupPosition {
       // ignore: deprecated_member_use_from_same_package
       case PopupSnap.top:
       case PopupSnap.markerTop:
-        return _snapToMarkerTop(visibleSize, markerPosition, markerSize);
+        return _snapToMarkerTop(
+            visibleSize, markerPosition, markerSize, popupHeight);
       // ignore: deprecated_member_use_from_same_package
       case PopupSnap.right:
       case PopupSnap.markerRight:
@@ -59,7 +63,8 @@ class PopupPosition {
       case PopupSnap.mapCenter:
         return _snapToMap(visibleSize, Alignment.center);
       default:
-        return _snapToMarkerTop(visibleSize, markerPosition, markerSize);
+        return _snapToMarkerTop(
+            visibleSize, markerPosition, markerSize, popupHeight);
     }
   }
 
@@ -80,12 +85,15 @@ class PopupPosition {
     CustomPoint visibleSize,
     CustomPoint markerPosition,
     CustomPoint markerSize,
+    double popupHeight,
   ) {
     return PopupContainer(
       size: visibleSize,
       alignment: Alignment.bottomCenter,
       left: markerPosition.x - (visibleSize.x / 2) + (markerSize.x / 2),
-      bottom: visibleSize.y - markerPosition.y,
+      bottom: popupHeight != null
+          ? visibleSize.y - markerPosition.y - popupHeight
+          : visibleSize.y - markerPosition.y,
     );
   }
 

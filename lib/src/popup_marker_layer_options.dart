@@ -18,6 +18,8 @@ class PopupMarkerLayerOptions extends LayerOptions {
   /// Controls the position of the popup relative to the marker or popup.
   final PopupSnap popupSnap;
 
+  final double popupHeight;
+
   /// Show the list of [markers] on the map with a popup that is shown when a
   /// marker is tapped or when triggered via the [popupController].
   ///
@@ -28,6 +30,7 @@ class PopupMarkerLayerOptions extends LayerOptions {
     this.markers = const [],
     @required this.popupBuilder,
     this.popupSnap = PopupSnap.markerTop,
+    this.popupHeight,
     PopupController popupController,
     Stream<Null> rebuild,
   })  : popupController = popupController ?? PopupController(),

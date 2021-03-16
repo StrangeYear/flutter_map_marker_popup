@@ -4,12 +4,15 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:flutter_map_marker_popup/src/marker_popup.dart';
 import 'package:flutter_map_marker_popup/src/popup_marker_layer_options.dart';
+import 'package:latlong/latlong.dart';
 
 class PopupMarkerLayer extends StatelessWidget {
   /// For normal layer behaviour
   final PopupMarkerLayerOptions layerOpts;
   final MapState map;
   final Stream<Null> stream;
+  Marker _lastClick;
+  final Distance _distance = Distance();
 
   PopupMarkerLayer(this.layerOpts, this.map, this.stream);
 
@@ -57,7 +60,38 @@ class PopupMarkerLayer extends StatelessWidget {
               left: pixelPosX,
               top: pixelPosY,
               child: GestureDetector(
-                onTap: () => layerOpts.popupController.togglePopup(markerOpt),
+                onTap: () {
+                  // 找到当前点附近的marker < 20米
+                  var markers = layerOpts.markers
+                      .where((element) =>
+                          _distance.distance(element.point, markerOpt.point) <
+                          20)
+                      .toList();
+
+                  if (markers.isEmpty) {
+                    _lastClick = markerOpt;
+                    layerOpts.popupController.togglePopup(markerOpt);
+                    return;
+                  }
+
+                  var nextIndex = 0;
+
+                  // 找到_lastClick对应的坐标 如果找不到就第一个
+                  for (var i = 0; i < markers.length; i++) {
+                    var current = markers[i];
+                    // 如果上次点击和当前点击的一样
+                    if (_lastClick == current) {
+                      nextIndex = i + 1;
+                      break;
+                    }
+                  }
+
+                  if (nextIndex == markers.length) {
+                    nextIndex = 0;
+                  }
+                  _lastClick = markers[nextIndex];
+                  layerOpts.popupController.togglePopup(_lastClick);
+                },
                 child: markerOpt.builder(context),
               ),
             ),
@@ -69,6 +103,7 @@ class PopupMarkerLayer extends StatelessWidget {
             mapState: map,
             popupController: layerOpts.popupController,
             snap: layerOpts.popupSnap,
+            popupHeight: layerOpts.popupHeight,
             popupBuilder: layerOpts.popupBuilder,
           ),
         );
